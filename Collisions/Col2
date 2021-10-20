@@ -1,0 +1,61 @@
+# Creating a collision between a silicon cube and a silicon block. Version 2 20/10/21.
+# This version attempts to define different atom types for the sphere and cube.
+
+# SIMULATION PARAMETERS
+
+units           metal
+dimension       3
+boundary        p p p
+atom_style      atomic
+
+# VARIABLES
+variable latparam equal 5.431
+
+# ATOM DEFINITION
+
+lattice			diamond ${latparam}
+region			whole block 0 100 0 10 0 10
+create_box		2 whole
+region 			SiCube block 90 100 0 10 0 10
+create_atoms	1 region SiCube
+region 			SiSphere sphere 10 5 5 3
+create_atoms	2 region SiSphere
+
+# INTERATOMIC POTENTIAL
+
+pair_style      meam/spline
+pair_coeff      1 1 Si_1.meam.spline Si
+pair_coeff      1 2 Si_1.meam.spline Si
+pair_coeff      2 2 Si_1.meam.spline Si
+
+
+# SIMULATION
+
+# Timestep 
+reset_timestep  0
+timestep        0.001
+
+# Temp
+
+mass 1 28.0
+
+velocity all create 600 1111
+
+# Assign Fixes
+
+fix 1 all npt temp 300 300 0.5 iso 0 0 5 drag 1
+
+#Thermo Output
+
+thermo 100
+thermo_style custom step lx ly lz press pxx pyy pzz pe temp
+thermo_modify norm yes
+#Dump
+
+dump		2 all image 100 image.*.jpg type type &
+
+#Run!
+
+run 2000
+unfix 1
+undump 1
