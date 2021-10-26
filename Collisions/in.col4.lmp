@@ -1,6 +1,6 @@
 # Creating a collision between a silicon cube and a silicon block. Version 4 26/10/21.
-# This script successfully creates a cube and sphere, assigns the sphere a unique group
-# and assigns the sphere a velocity.
+# This script successfully creates a cube and sphere, assigns the sphere a unique group and assigns a velocity to the sphere.
+# Velocity and run time can be altered to investigate creating a collision!
 
 # SIMULATION PARAMETERS
 
