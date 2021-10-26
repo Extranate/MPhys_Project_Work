@@ -1,0 +1,65 @@
+# Creating a collision between a silicon cube and a silicon block. Version 4 26/10/21.
+# This script successfully creates a cube and sphere, assigns the sphere a unique group
+# and assigns the sphere a velocity.
+
+# SIMULATION PARAMETERS
+
+units           metal
+dimension       3
+boundary        p p p
+atom_style      atomic
+
+# VARIABLES
+variable latparam equal 5.431
+
+# ATOM DEFINITION
+
+lattice			diamond ${latparam}
+region			whole block 0 50 0 10 0 10
+create_box		1 whole
+region 			SiCube block 40 50 0 10 0 10
+create_atoms	1 region SiCube
+region 			SiSphere sphere 10 5 5 3
+create_atoms	1 region SiSphere
+
+# GROUP DEFINITION
+
+group impactor region SiSphere
+
+# INTERATOMIC POTENTIAL
+
+pair_style      meam/spline
+pair_coeff      * * Si_1.meam.spline Si 
+
+# SIMULATION
+
+# Timestep 
+reset_timestep  0
+timestep        0.001
+
+# Temp
+
+mass 1 28.0
+
+velocity all create 600 1111
+
+velocity impactor set 100 0 0
+
+# Assign Fixes
+
+fix 1 all npt temp 300 300 0.5 iso 0 0 5 drag 1
+
+#Thermo Output
+
+thermo 100
+thermo_style custom step lx ly lz press pxx pyy pzz pe temp
+thermo_modify norm yes
+#Dump
+
+dump		2 all image 100 image.*.jpg type type &
+
+#Run!
+
+run 2000
+unfix 1
+undump 1
